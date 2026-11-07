@@ -242,6 +242,97 @@ body {
   line-height: 1.7;
 }
 
+.chat-markdown {
+  min-width: 0;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.chat-markdown > :first-child {
+  margin-top: 0;
+}
+
+.chat-markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.chat-markdown h1,
+.chat-markdown h2,
+.chat-markdown h3,
+.chat-markdown h4 {
+  margin: 1em 0 0.45em;
+  color: inherit;
+  font-size: 1em;
+  font-weight: 650;
+}
+
+.chat-markdown p,
+.chat-markdown ul,
+.chat-markdown ol,
+.chat-markdown blockquote,
+.chat-markdown pre,
+.chat-markdown table {
+  margin: 0 0 0.8em;
+}
+
+.chat-markdown ul,
+.chat-markdown ol {
+  padding-left: 1.5em;
+}
+
+.chat-markdown blockquote {
+  padding-left: 0.8em;
+  border-left: 3px solid #cbd5e1;
+  color: #5f6b7c;
+}
+
+.chat-markdown :not(pre) > code {
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+  background: #f1f3f6;
+  color: #b42318;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.chat-markdown pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 12px;
+  border-radius: 6px;
+  background: #1f2937;
+  color: #f8fafc;
+  line-height: 1.55;
+}
+
+.chat-markdown pre code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.chat-markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.chat-markdown th,
+.chat-markdown td {
+  padding: 6px 9px;
+  border: 1px solid #e2e7f0;
+  text-align: left;
+}
+
+.chat-markdown th {
+  background: #f5f7fa;
+}
+
+.chat-markdown a {
+  color: #3157c8;
+  text-decoration: underline;
+}
+
 .chat-message--user .chat-content {
   color: #fff;
 }

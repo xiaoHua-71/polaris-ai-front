@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Alert, Avatar, Button, Input, Space, Typography } from 'antd'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import {
   ClearOutlined,
   RobotOutlined,
   SendOutlined,
+  StopOutlined,
   UserOutlined,
 } from '@ant-design/icons'
 import { useChatStore } from '@/stores/chatStore'
@@ -16,7 +19,7 @@ const SUGGESTIONS = [
 
 export default function ChatPage() {
   const [draft, setDraft] = useState('')
-  const { messages, sending, error, send, clear, dismissError } = useChatStore()
+  const { messages, sending, error, send, stop, newConversation, dismissError } = useChatStore()
   const streamRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -37,12 +40,12 @@ export default function ChatPage() {
         <div>
           <Typography.Title level={4}>对话</Typography.Title>
           <Typography.Text type="secondary">
-            POST /api/chat · 当前为单轮、非流式
+            POST /api/chat/stream · SSE 流式 · 多轮记忆
           </Typography.Text>
         </div>
         {messages.length > 0 && (
-          <Button icon={<ClearOutlined />} onClick={clear} disabled={sending}>
-            清空
+          <Button icon={<ClearOutlined />} onClick={newConversation}>
+            新会话
           </Button>
         )}
       </div>
@@ -76,24 +79,30 @@ export default function ChatPage() {
                 icon={message.role === 'user' ? <UserOutlined /> : <RobotOutlined />}
               />
               <div className="chat-bubble">
-                <Typography.Text className="chat-content">
-                  {message.content}
-                </Typography.Text>
+                {sending && message.role === 'assistant' &&
+                message.id === messages.at(-1)?.id &&
+                message.content.length === 0 ? (
+                  <div className="chat-bubble--loading" aria-label="正在生成">
+                    <span className="typing-dot" />
+                    <span className="typing-dot" />
+                    <span className="typing-dot" />
+                  </div>
+                ) : message.role === 'assistant' ? (
+                  <div className="chat-markdown">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {message.content}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  <Typography.Text className="chat-content">
+                    {message.content}
+                  </Typography.Text>
+                )}
               </div>
             </article>
           ))
         )}
 
-        {sending && (
-          <article className="chat-message chat-message--assistant">
-            <Avatar className="chat-avatar" icon={<RobotOutlined />} />
-            <div className="chat-bubble chat-bubble--loading">
-              <span className="typing-dot" />
-              <span className="typing-dot" />
-              <span className="typing-dot" />
-            </div>
-          </article>
-        )}
       </div>
 
       {error && (
@@ -126,13 +135,12 @@ export default function ChatPage() {
         <div className="chat-composer-bar">
           <Typography.Text type="secondary">模型：deepseek-chat</Typography.Text>
           <Button
-            type="primary"
-            icon={<SendOutlined />}
-            loading={sending}
-            disabled={!draft.trim()}
-            onClick={() => void submit()}
+            type={sending ? 'default' : 'primary'}
+            icon={sending ? <StopOutlined /> : <SendOutlined />}
+            disabled={!sending && !draft.trim()}
+            onClick={() => (sending ? stop() : void submit())}
           >
-            发送
+            {sending ? '停止' : '发送'}
           </Button>
         </div>
       </div>
